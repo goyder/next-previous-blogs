@@ -245,7 +245,7 @@ One this I will note is that the performance is notably a bit slower, especially
 mounting
 
 ```bash
-losetup -f  # find next loop device
+losetup -f  # find next loop device, e.g. /dev/loop13
 sudo losetup /dev/loop13 NS33_2GB_dup.dd  # assign to loop
 sudo mount -t ufs -o ufstype=nextstep /dev/loop13 /mnt/next 
 # https://unix.stackexchange.com/questions/316401/how-to-mount-a-disk-image-from-the-command-line

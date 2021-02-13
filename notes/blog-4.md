@@ -61,6 +61,14 @@ NeXT is fully featured, and is happy to format a blank disk presented to it; but
 
 I think this approach has legs, but I decided to explore other options in the meantime.
 
+**UPDATE** - I eventually cracked this! The key thing is to manually set the [file system for mounting to a specific NeXTSTEP option]( https://www.kernel.org/doc/html/latest/admin-guide/ufs.html). Unfortunately, this only allows read-only access, which means that this approach is *not* suitable for our needs. Regardless, example code is as follows:
+
+```bash
+losetup -f  # find next loop device, e.g. /dev/loopXX
+sudo losetup /dev/loopXX NS33_2GB_dup.dd  # assign to loop
+sudo mount -t ufs -o ufstype=nextstep /dev/loopXX /mnt/next 
+```
+
 #### **Network file systems** 
 
 Previous had two files in its core directory of promise: `networking.howto.txt` and `filesharing.howto.txt`. The former walked through how to connect NeXTSTEP to your local network; the latter how to set up a [Network File System](https://en.wikipedia.org/wiki/Network_File_System) server on a Mac and connect the machine to it.
