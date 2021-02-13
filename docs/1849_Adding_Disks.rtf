@@ -1,0 +1,905 @@
+{\rtf0\ansi{\fonttbl\f0\fnil Times-Roman;\f1\ftech Symbol;\f2\fswiss Helvetica;\f3\fmodern Courier;\f4\fmodern Ohlfs;}
+\paperw12000
+\paperh14380
+\margl120
+\margr0
+{\colortbl;\red0\green0\blue0;}
+\f0\b0\i\ulnone\ql\fs24\fi0\li0\gray0\fc0\cf0\up0\dn0 NEXTSTEP In Focus
+\i0 , Spring 1994 (Volume 4, Issue 2). \
+Copyright 
+\f1 „
+\f0 1994 by NeXT Computer, Inc.  All Rights Reserved.\
+\
+
+\pard\tx7500\tx9520\fs12\fc0\cf0 \
+
+\pard\fc0\cf0 \
+
+\fs94 Adding On without Flipping Out\
+
+\fs20 \
+
+\pard\tx7500\tx9520\fs28\fc0\cf0 Mark Tacchi\
+
+\fs10 \
+
+\i\fs28 \
+NEXTSTEP provides features to make it as easy as possible to install a new disk on a computer. This article describes how to format, initialize, and partition SCSI and IDE disk drives, as well as how to mount them at boot time.\
+
+\fs24 \
+
+\pard\f2\b\i0\fs28\fc0\cf0 \
+
+\fs48 Using SCSI and IDE Drives\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 Installing a new disk on some computers can be complicated, particularly if you want to use sophisticated features like partitioning and automounting. NEXTSTEP addresses these difficulties with tools for formatting, initializing, and partitioning SCSI and IDE disk drives. It also lets you set up disks to mount automatically at boot time. If you want to install disks that conform to either the SCSI or IDE specifications, you should have little trouble adding them to your computer \
+in any combination. \
+
+\fs12 \
+
+\pard\f2\b\fs52\fc0\cf0 \
+
+\fs48 Formatting and Initializing\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 Before you can use a disk with any computer, the disk must be formatted and initialized. Formatting is a low-level operation that places timing marks on the disk so that the hardware can distinguish where physical block sectors start and end. Floppy disks and other removable media with a total storage capacity of 6 megabytes or less generally aren't formatted when you buy them. In contrast, hard disks and storage media that have more than 6 megabytes of storage capacity are usually formatted at the factory where they're made. \
+
+\fs12 \
+
+\fs28 Initialization places an internal label and other items on the disk, such as a superblock, inodes, and other file system elements for storing, retrieving, and managing data. Generally, disks aren't initialized when you buy them.\
+
+\fs12 \
+
+\fs28 When you connect an uninitialized or unrecognized hard disk to a computer, NEXTSTEP asks whether you want to initialize the disk or ignore it. If you choose to initialize the disk, NEXTSTEP asks you to select the disk name and file system type. It then initializes the disk with the chosen file system and mounts it. If you insert an unformatted floppy disk in the computer, NEXTSTEP follows \
+the same steps but automatically formats the disk before initializing and mounting it.\
+
+\fs12 \
+
+\fs28 In the infrequent case in which you have an unformatted disk that's larger than 6 megabytes, NEXTSTEP can't automatically format it. Instead, you must format it yourself before initializing it. To do this for a SCSI disk, use the 
+\b sdform
+\b0  utility. There's currently no comparable utility for IDE drives in NEXTSTEP, so you must resort to DOS utilities–or if your machine comes with hard disk maintenance utilities, you can use them.\
+
+\fs12 \
+
+\i\fs16 \
+
+\fs24 For information on the 
+\b sdform
+\b0  SCSI disk formatting utility, please see the 
+\b sdform
+\b0  UNIX manual page.\
+
+\i0\fs28 \
+\
+
+\fs48 \
+
+\pard\f2\b\fs20\fc0\cf0 \
+
+\fs48 Partitioning\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 When NEXTSTEP automatically initializes a hard disk, it creates a single partition that occupies the entire disk. A single partition arrangement is very simple to use and requires minimal system administration. However, sometimes you might prefer to create a disk with several partitions to manage data a special way, contain disk damage, facilitate backup operations, or export multiple file systems from the same disk with different access privileges. There are several ways to partition a disk, depending on whether the disk is a SCSI or IDE disk.\
+
+\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 Partitioning with fdisk\
+
+\fs8 \
+
+\f0\b0\fs28 If you need to access operating systems in addition to NEXTSTEP at boot time, you may wish to partition your disk with the utility 
+\b fdisk
+\b0 . You can use NEXTSTEP's 
+\b fdisk
+\b0  on an Intel-based computer to create up to four partitions on your drive. The command modifies the DOS partition table that resides on the boot sector of bootable disks.\
+
+\fs12 \
+
+\fs28 To run 
+\b fdisk
+\b0 , you must be 
+\b root
+\b0 . You can run 
+\b fdisk
+\b0  in interactive mode by specifying the raw device with no inquiry or action. Or, to run 
+\b fdisk
+\b0  on the 
+\i live partition
+\i0 –the entire secondary IDE disk drive–specify the device 
+\b hd1h
+\b0 :\
+
+\fs12 \
+
+\pard\tx-540\tx-160\tx220\f3\fs24\fc0\cf0 # 
+\b fdisk /dev/rhd1h\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 Note that the NEXTSTEP booter and 
+\b fdisk
+\b0  command can identify only one physical NEXTSTEP partition.\
+
+\i\fs4 \
+
+\fs24 To find out more about 
+\b fdisk
+\b0 , see the 
+\b fdisk
+\b0  UNIX manual page and Divvying It Up: \
+How to Use 
+\b fdisk
+\b0 ∫ (NEXTSTEP In Focus 3 [Spring 1993]), NeXTanswers #1131.\
+
+\i0\fs28 \
+
+\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 BSD 4.3 UNIX partitioning\
+
+\fs8 \
+
+\f0\b0\fs28 To build a disk with one or two BSD 4.3 UNIX partitions, you can use the BuildDisk application in 
+\b /NextAdmin
+\b0 . You can also use this application to place the NEXTSTEP operating system on the disk. \
+
+\fs12 \
+
+\fs28 (BSD 4.3 has a fixed partition limit of 2 gigabytes (2
+\fs20\up6 31
+\fs28\up0 bytes) and drives that exceed this boundary must be partitioned.)\
+
+\fs12 \
+
+\fs28 If you want more than two partitions or some special characteristics for your disk, you must create a 
+\b disktab
+\b0  entry and use it to initialize the disk from the command line. The 
+\b /etc/disktab
+\b0  file contains data that describes each disk's native geometry and how the computer should partition each disk when it initializes it. You don't need to place an entry in the 
+\b disktab
+\b0  file for every disk you want to add to the system–the initialization software can read the necessary data from any disk drive that supports the SCSI MODESENSE command. Rather, you provide a 
+\b disktab
+\b0  entry if you want to format your disk in some special way.\
+
+\fs12 \
+
+\fs28 To create a 
+\b disktab
+\b0  entry, you must determine the geometry of your disk, choose a location and size for each partition, and then add lines describing the partitions you want into the 
+\b /etc/disktab
+\b0  file. \
+
+\fs12 \
+
+\b\fs28 Note:
+\b0  NeXT Computer, Inc., doesn't officially support modifications to the 
+\b disktab
+\b0  file. You should not create 
+\b disktab
+\b0  entries unless you have had extensive experience with disks in a UNIX environment. This information is provided to point experienced administrators to the right tools.\
+
+\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 Analyzing the disk\
+
+\fs8 \
+
+\f0\b0\fs28 To determine your drive's name, geometry, and size, contact the disk vendor or use the command 
+\b scsimodes
+\b0  to get this information for an existing disk from the same vendor. This utility displays information about a SCSI disk. 
+\b scsimodes
+\b0  takes a single command line argument, the name of the raw disk device. You must run this command as 
+\b root
+\b0 :\
+
+\fs12 \
+
+\pard\tx-540\tx-160\tx220\f3\fs24\fc0\cf0 # 
+\b scsimodes /dev/rsd0a\
+
+\b0 SCSI information for /dev/rsd0a\
+Drive type: SEAGATE ST43400N\
+512 bytes per sector\
+99 sectors per track\
+21 tracks per cylinder\
+2737 cylinder per volume (including spare cylinders)\
+9 spare sectors per cylinder\
+21 alternate tracks per volume\
+5688446 usable sectors on volume\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\fs28\fc0\cf0 If your system already has a labeled disk of the type you want to partition, you can get a more complete set of 
+\b disktab
+\b0  information by writing a program that invokes the 
+\b getdiskbyname()
+\b0  system call. Please see the 
+\b getdiskbyname
+\b0  UNIX manual page for details.\
+
+\fs12 \
+
+\i\fs4 \
+
+\fs24 The 
+\b scsimodes
+\b0  command is not officially documented nor supported by NeXT.\
+
+\fs4 \
+\
+
+\fs24 IDE drives don't respond to the 
+\b scsimodes
+\b0  command–you'll have to get data about any IDE drive from the disk drive vendor.\
+
+\fs16 \
+
+\i0\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 Editing the disktab file\
+
+\fs8 \
+
+\f0\b0\fs28 Before you edit the 
+\b disktab
+\b0  file, please be certain that you understand its format. Review the UNIX manual page on 
+\b disktab
+\b0  and the system's existing 
+\b disktab
+\b0  file. \
+
+\fs12 \
+
+\fs28 The 
+\b disktab
+\b0  file contains a list of entries, one for each disk configuration. Each entry consists of a single UNIX ™line.∫ It typically takes several lines within a text editor to write an entry–intermediate lines have the UNIX escape backslash character (
+\b \\
+\b0 ) before the carriage return, so that the entry is recognized as a single line.\
+
+\fs12 \
+
+\fs28 Entries in 
+\b disktab
+\b0  consist of a number of colon-separated fields. The first entry for each disk gives the names for the disk, separated by vertical bar characters (
+\b |
+\b0 ). The last name listed is a long name that fully identifies the disk.\
+
+\fs12 \
+
+\fs28 Figure 1 shows a typical 
+\b disktab
+\b0  entry for a SCSI disk. This is the entry for the 2.5 gigabyte Seagate drive described by the 
+\b scsimodes
+\b0  command above. Note that because this drive is larger than 2 gigabytes–2
+\fs20\up6 31 
+\fs28\up0 bytes, or 2,147,483,648 bytes–it must be partitioned into multiple BSD 4.3 UNIX partitions.\
+
+\fs12 \
+\
+\
+
+\pard\tx100\f2\b\fs24\fc0\cf0 Figure 1: 
+\f0\b0\i A 
+\b disktab
+\b0  entry for a Seagate SCSI disk drive
+\pard\tx7500\tx9520\i0\fs12\fc0\cf0 \
+\
+
+\f3\fs24 ST43400N|ST43400N-512|SEAGATE ST43400N-512:\\\
+        :ty=fixed_rw_scsi:nc#2737:nt#21:ns#99:ss#512:rm#3600:\\\
+        :fp#160:bp#0:ng#0:gs#0:ga#0:ao#0:\\\
+        :os=sdmach:z0#32:z1#96:hn=localhost:ro=a:\\\
+        :pa#0:sa#4194304:ba#8192:fa#1024:ca#32:da#4096:ra#10:\\\
+                :oa=time:ia:ta=4.3BSD:\\\
+        :pb#4194304:sb#1494142:bb#8192:fb#1024:cb#32:db#4096:\\\
+                :rb#10:ob=time:ib:tb=4.3BSD:\
+
+\f0\fs12 \
+\
+\
+
+\fs28 The name of the drive is the same as the name shown by the 
+\b scsimodes
+\b0  command, with the physical sector size of the disk appended at the end. If you name a 
+\b disktab
+\b0  entry according to this convention, the BuildDisk application can use the entry to format and initialize the disk. If you name it another way, you must use the 
+\b disk
+\b0  command with the 
+\b -i
+\b0  and 
+\b -t
+\b0  options to initialize the disk according to the 
+\b disktab
+\b0  entry.\
+
+\fs12 \
+
+\fs28 Figure 2 shows what the other fields in the 
+\b disktab
+\b0  entry specify.\
+
+\fs12 \
+
+\fs28 \
+
+\fs12 \
+
+\pard\tx100\i\fs8\fc0\cf0 \
+
+\f2\b\i0\fs24 Figure 2: 
+\f0\b0\i Fields in a 
+\b disktab
+\b0  file\
+
+\pard\tx7500\tx9520\i0\fs12\fc0\cf0 \
+\
+
+\pard\tx1000\tx7500\tx9520\f2\b\fs24\fi-1000\li1000\fc1\cf1 Field	Description
+\b0 \
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ty
+\b0 	Type of disk. Required for all entries. Valid types are 
+\b removable_rw_scsi
+\b0 , 
+\b fixed_rw_scsi
+\b0 , 
+\b fixed_rw_ide
+\b0 , 
+\b removable_rw_optical
+\b0 , 
+\b removable_rw_floppy
+\b0 .\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ns
+\b0 	Number of sectors per track. This is a critical field, used for performance tuning at initialization.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 nt
+\b0 	Number of tracks per cylinder. Helps decide where to put superblock backups. Not a critical field.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 nc
+\b0 	Total number of cylinders on the disk. Not used by NEXTSTEP.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 p
+\b0 [a-h]	Base sector numbers of partitions 
+\b a
+\b0  through 
+\b h
+\b0 . \
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 s
+\b0 [a-h]	Sizes of partitions 
+\b a
+\b0  through 
+\b h
+\b0 . \
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 b
+\b0 [a-h]	Block sizes for partitions 
+\b a
+\b0  through 
+\b h
+\b0 , in bytes. This is the size of a logical block in the file system. The NEXTSTEP file system block size is 8192 bytes.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 f
+\b0 [a-h]	Fragment sizes for partitions 
+\b a
+\b0  through 
+\b h
+\b0 , in bytes. This is the Berkeley file system 
+\b frag
+\b0 . Set it to 1024 bytes; there's no advantage to making it larger. \
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 c
+\b0 [a-h]	Partition "cylinders-per-group" for 
+\b newfs
+\b0 . This is a "black magic" parameter for disk block management–use 
+\b 32
+\b0 . BuildDisk or 
+\b mkfs
+\b0  (which runs when you call 
+\b newfs
+\b0 ) lets you know if you need to change it. See 
+\b d
+\b0 [a-h], partition density.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 d
+\b0 [a-h]	Partition density–bytes-per-inode–for 
+\b newfs
+\b0 . Indicates how large files in the partition will be on the average, and thus how many inodes it should provide. A good general value is 
+\b 4096
+\b0 . If you will have just a few large files on the disk, make this number larger; if you expect to have many very small files, specify a smaller number. If NEXTSTEP can't set up a file system with the parameters as you've set them, it will suggest that you change the cylinders-per-group parameter, 
+\b c
+\b0 [a-h].\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 r
+\b0 [a-h]	Partition minimum left free for 
+\b newfs
+\b0 , a value from 
+\b 0
+\b0  to 
+\b 100
+\b0 . The percent of formatted disk space that should always be left free, so blocks can be distributed among files efficiently. You can save space by using a smaller minfree–floppy disks have a minfree of 0% for because they're small and slow. However, a minfree less than 10% isn't usually recommended for hard disks. \
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 o
+\b0 [a-h]	Partition optimization for 
+\b newfs
+\b0 ; accepted values are 
+\b space
+\b0  and 
+\b time
+\b0 . Set to 
+\b time
+\b0  if possible. Use 
+\b space
+\b0  only when space on the disk is critically short.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 i
+\b0 [a-h]	Whether the system should run 
+\b newfs
+\b0  on partition during initialization with 
+\b disk
+\b0 . Include this field in the entry for any partition that will have a UNIX file system on it; omit it otherwise.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 m
+\b0 [a-h]	Partition mount point name. Not used for NEXTSTEP–the mount point is established by the automounter or by the entry in the local 
+\b /etc/fstab
+\b0  file.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 a
+\b0 [a-h]	Partition automount on insert. Unused by NEXTSTEP. \
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 t
+\b0 [a-h]	Partition file system type, like 
+\b 4.3BSD
+\b0  or 
+\b sound
+\b0 . Set to 
+\b 4.3BSD
+\b0 . Not used now, but may be in the future.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 rm
+\b0 	Rotational speed of the disk in rotations per minute, for performance tuning. The default value is 
+\b 3600
+\b0  for hard disks, 
+\b 300
+\b0  for floppy disks. This information isn't reported by 
+\b scsimodes
+\b0 –obtain the value from the disk manufacturer. If the disk is the same type as one you already have in your system, you can get this value by writing a program that calls 
+\b getdiskbydev()
+\b0 . If you can't find the true value, the default will suffice.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ss
+\b0 	Sector size in bytes. Boot disks on Intel-based computers must have 512 bytes/sector. Data disks can have 1024 bytes/sector. For other architectures, both boot and data disks can have 1024 bytes/sector.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 fp
+\b0 	Number of sectors in the "front porch" of the disk. These are 1024-byte sectors; set this value to 
+\b 160
+\b0  for hard drives. Floppies use 
+\b 92
+\b0 .\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 bp
+\b0 	Number of sectors in "back porch" of the disk. 
+\b 0
+\b0  for all current devices.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ng
+\b0 	Number of alternate groups on the disk. Only for optical disks. Set to 
+\b 0
+\b0  or omit.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 gs
+\b0 	Number of sectors per alternate group. Only for optical disks. Set to 
+\b 0
+\b0  or omit.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ga
+\b0 	Number of alternate sectors per alternate group. Only for optical disks. Set to 
+\b 0
+\b0  or omit.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ao
+\b0 	Sector offset of alternates in alternate group. Only for optical disks. Set to 
+\b 0
+\b0  or omit.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 os
+\b0 	Name of file to boot from. Set to 
+\b sdmach
+\b0  for NeXT computers and to 
+\b mach_kernel
+\b0  for HP PA-RISC, Intel-based, and Sun SPARC computers.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 z
+\b0 [0-1]	Locations of first-level boot code. Set to 
+\b 32
+\b0  and 
+\b 96
+\b0  respectively for hard disks, 
+\b 32
+\b0  and 
+\b 32
+\b0  for floppy disks.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 hn
+\b0 	Host name to be written to label.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 ro
+\b0 	Read-only root partition. Unused by NEXTSTEP.\
+
+\f0\fs12\fc0\cf0 \
+
+\f2\b\fs24\fc1\cf1 rw
+\b0 	
+\fc0\cf0 Read/write partition. Unused by NEXTSTEP.\
+
+\pard\tx7500\tx9520\f0\fs12\fc0\cf0 \
+\
+\
+\
+
+\i\fs24 For the sector fields, if you plan to have 1024-byte sectors on a 512-byte/sector disk, divide the value by 2 and round up.  You can't use 1024 bytes per sector for boot disks on Intel-based computers.\
+
+\fs16 \
+
+\b\fs24 newfs
+\b0  only sets up the file system, whereas BuildDisk attempts to format, initialize, and build a bootable disk.  Use 
+\b newfs
+\b0  to create an unbootable data disk.\
+
+\fs16 \
+
+\pard\tx100\fs20\fc0\cf0 \
+
+\pard\tx7500\tx9520\f2\b\i0\fs12\fc0\cf0 \
+
+\fs28 Initializing the disk\
+
+\fs8 \
+
+\f0\b0\fs28 When you've created the entry in the 
+\b disktab
+\b0  file, you can build the disk with BuildDisk or simply initialize it with the 
+\b disk
+\b0  command. If the 
+\b disktab
+\b0  file contains an entry for a disk and if the entry name matches the name of the disk, BuildDisk uses the 
+\b disktab
+\b0  entry.\
+
+\fs12 \
+
+\pard\tx-540\tx-160\tx220\f3\fs24\fc0\cf0 # 
+\b disk /dev/rsd0a\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 You can use 
+\b disk
+\b0  interactively if the name of the drive matches the name of the disktab entry. The 
+\b init
+\b0  command initializes the disk.  For help in 
+\b disk
+\b0 's interactive mode, type 
+\b help
+\b0  at the 
+\b disk
+\b0  prompt. Otherwise you can enter the 
+\b disktab
+\b0  entry name after the 
+\b -t
+\b0  flag:\
+
+\fs12 \
+
+\pard\tx-540\tx-160\tx220\f3\fs24\fc0\cf0 # 
+\b disk -i -t ST43400N /dev/rsd0a\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 Unlike with other UNIX and disk systems, you don't have to start a partition on a track or cylinder boundary. However, if you don't start the partition on a boundary, you might waste a little space. Check for messages from 
+\b mkfs
+\b0  in the Console.\
+
+\fs12 \
+
+\pard\f2\b\fs52\fc0\cf0 \
+
+\fs48 Mounting Drives and Partitions\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 If there is no entry in 
+\b /etc/fstab
+\b0  for a disk or partition, the disk or partition won't be mounted until a user logs in.  Once someone logs in and Workspace Manager starts up, NEXTSTEP examines all unmounted devices to see whether they've been initialized for a file system supported by NEXTSTEP. Supported file systems include Berkeley UNIX 4.3, CD-ROM, DOS, Macintosh, and audio compact disc.\
+
+\fs12 \
+
+\fs28 If a drive conforms to one of these standard filesystems, Workspace Manager sends a mount request to the drivers. NEXTSTEP mounts the drive on the root directory of the filesystem as 
+\b /
+\b0\i disklabelname
+\i0 . Drives and partitions mounted in this manner are owned by the current user. In contrast, drives and partitions without entries in 
+\b /etc/fstab
+\b0  are owned by the current user when mounted.\
+
+\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 Drives and partitions with /etc/fstab entries\
+
+\fs8 \
+
+\f0\b0\fs28 NEXTSTEP mounts any connected drive or partition that has an entry in 
+\b /etc/fstab
+\b0  when the computer boots. By default, such disks and partitions are owned by 
+\b root
+\b0 .  The system disk, which holds the root file system, always has an entry in 
+\b /etc/fstab
+\b0 , placed there when NEXTSTEP was installed.\
+
+\fs12 \
+
+\fs28 Additional partitions on the system disk or any other disks must be mounted manually or be given an 
+\b /etc/fstab
+\b0  entry. The automounter sees only the first partition on a disk and partitions that have entries in the 
+\b /etc/fstab
+\b0  file. \
+
+\fs12 \
+
+\fs28 Conversely, NEXTSTEP will try to mount every disk it sees, either at boot time or when the Workspace starts up, unless there is an 
+\b /etc/fstab
+\b0  entry for it that includes the 
+\b -noauto
+\b0  option. Please see the UNIX manual page on 
+\b fstab
+\b0  for more information. \
+
+\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 Creating /etc/fstab entries\
+
+\fs8 \
+
+\f0\b0\fs28 Figure 3 shows three examples of 
+\b /etc/fstab
+\b0  files. The first has entries for two SCSI drives, the second for two IDE drives, and the third for one SCSI drive and one IDE drive.\
+
+\fs12 \
+\
+\
+
+\pard\tx100\f2\b\fs24\fc0\cf0 Figure 3: 
+\f0\b0\i Entries from 
+\b /etc/fstab
+\b0  files for different disk drive configurations\
+
+\pard\tx7500\tx9520\i0\fs12\fc0\cf0 \
+
+\f2\b\fs24 SCSI only:\
+
+\f3\b0 /dev/sd0a / 4.3 rw,noquota,noauto 0 1\
+/dev/sd1a /home 4.3 rw,noquota 0 2\
+/dev/sd1b /data 4.3 rw,noquota 0 2\
+\
+
+\f2\b\fc1\cf1 IDE only:\
+
+\f3\b0\fc0\cf0 /dev/hd0a / 4.3 rw,noquota,noauto 0 1\
+/dev/hd1a /home 4.3 rw,noquota 0 2\
+\
+
+\f2\b\fc1\cf1 SCSI and IDE:\
+
+\f3\b0\fc0\cf0 /dev/hd0a / 4.3 rw,noquota,noauto 0 1\
+/dev/sd0a /SCSI_Disk 4.3 rw,noquota 1 2\
+/dev/sd1a /SCSI_CDROM 4.3 ro,noquota,removable 1 2\
+/dev/hd1a /IDE_Disk 4.3 rw,noquota 1 2\
+
+\f0\fs12 \
+\
+
+\fs28 You can display these entries by executing 
+\b mount -p
+\b0  once all devices are mounted; devices that have entries in the mount table, 
+\b /etc/mtab
+\b0 , are displayed. These are formatted to match that required for 
+\b /etc/fstab
+\b0  and can be directly appended. \
+
+\fs12 \
+\
+\
+
+\pard\tx100\f2\b\fs24\fc0\cf0 Figure 4: 
+\f0\b0\i Output from 
+\b mount -p
+\b0 \
+
+\pard\tx7500\tx9520\i0\fs12\fc0\cf0 \
+
+\f3\fs24\fc1\cf1 # 
+\b mount -p | grep dev
+\b0 \
+/dev/hd0a   /   4.3    rw,noquota,noauto   0 1\
+/dev/sd0a   /NEXTSTEP_3.2   4.3   ro,noquota,removable   1 2\
+/dev/sd1a   /Seagate SCSI disk   4.3   rw,noquota   1 2\
+/dev/hd1a   /Secondary_IDE   4.3   rw,noquota  1 2\
+
+\f0\fs12\fc0\cf0 \
+\
+
+\fs28 Although DOS partitions may appear in this output, you can't mount DOS partitions at boot time in this manner. DOS partitions require special treatment–see the next section.\
+
+\fs12 \
+
+\f2\b\fs20 \
+
+\fs28 DOS partitions\
+
+\fs8 \
+
+\f0\b0\fs28 DOS partitions are automatically mounted when a user logs into the Workspace. However, you can force the DOS partition to be mounted at boot time, so that remote users and anyone who logs in without the Workspace can access the partition.\
+
+\fs12 \
+
+\fs28 To automount the DOS partition at boot time, follow these steps:\
+
+\fs12 \
+
+\pard\tx-640\tx360\f2\b\fs20\fi-360\li360\fc0\cf0 1	
+\f0\b0\fs28 Append these lines to 
+\b /etc/rc.local
+\b0 . Substitute the name of the device you want to mount for 
+\b /dev/rhd0h
+\b0 .\
+
+\pard\tx-640\fs12\fc0\cf0 \
+
+\pard\tx-640\tx360\f3\fs24\fi-360\li360\fc0\cf0 	kl_util -l dosfs\
+	mount -t dos /dev/rhd0h /DOS\
+
+\pard\tx-540\tx-160\tx220\fs12\fc0\cf0 \
+
+\pard\tx-640\tx360\f0\fs28\fi-360\li360\fc0\cf0 	In the 
+\b mount
+\b0  command, 
+\b -t dos
+\b0  indicates you're mounting a DOS file system.  To mount another device such as the secondary IDE drive, use 
+\b /dev/rhd1h
+\b0  as the raw device.\
+
+\pard\tx7500\tx9520\fs12\fc0\cf0 \
+
+\pard\tx-640\tx360\f2\b\fs20\fi-360\li360\fc0\cf0 2	
+\f0\b0\fs28 Append this line to 
+\b /etc/kern_loader.conf
+\b0 :\
+
+\pard\tx-640\fs12\fc0\cf0 \
+
+\pard\tx-640\tx360\f3\fs24\fi-360\li360\fc0\cf0 	/usr/filesystems/DOS.fs/dosfs_reloc\
+
+\pard\tx-540\tx-160\tx220\fs12\fc0\cf0 \
+
+\pard\tx-640\tx360\f2\b\fs20\fi-360\li360\fc0\cf0 3	
+\f0\b0\fs28 Reboot.\
+
+\pard\tx-640\fs12\fc0\cf0 \
+
+\pard\tx7500\tx9520\fs28\fc0\cf0 Note that 
+\b root
+\b0  doesn't own this mount; the mount and its subdirectories and files are owned by the current user. This is a security hazard, but it's a DOS-ism that has existed since DOS' inception. \
+
+\fs12 \
+
+\pard\f2\b\fs52\fc0\cf0 \
+
+\fs48 Conclusion\
+
+\fs12 \
+
+\pard\tx7500\tx9520\f0\b0\fs28\fc0\cf0 You should now have enough information on formatting, initializing, partitioning, and mounting disks to play with them on your own.  If you run into any obstacles, refer to the UNIX manual pages for specifics.\
+
+\fs12 \
+
+\fs28 I'll leave you with this final cautionary note: Back up valuable data before experimenting, because an honest mistake as 
+\b root
+\b0  can be destructive to data–and to your day! 
+\fs20  \
+
+\fs12 \
+
+\i\fs28 \
+
+\fs24 Mark Tacchi is a member of the Technical Support Team. You can reach him by e-mail at 
+\b tacchi@next.com
+\b0 . Flip Dibner contributed material on SCSI devices for this article.\
+
+\i0\fs28 \
+
+\i\fs24 What did you think of this article? Please send feedback to 
+\b journal_info@next.com
+\b0  to let us know whether this article was useful and to tell us how we can make this journal a great resource for you!\
+
+\pard\tx520\tx1040\tx1560\tx2080\tx2600\tx3120\tx3640\tx4160\tx4680\tx5200\b\i0\fc1\cf1 ______________________________________________________________________________________________  \
+Next Article	
+\f2\b0 NeXTanswer #1851
+\f0    
+\b Detecting Rogue Servers
+\fs26    
+\fs24 \
+Table of contents	 
+\b0 http://www.next.com/HotNews/Journal/InFocus/Spring1994/ContentsSpring1994.html 
+}

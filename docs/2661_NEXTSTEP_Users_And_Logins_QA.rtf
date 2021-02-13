@@ -1,0 +1,200 @@
+{\rtf0\ansi{\fonttbl\f0\fswiss Helvetica;\f2\fnil Times-Roman;\f3\fmodern Courier;\f1\fmodern Ohlfs;}
+\paperw9840
+\paperh8400
+\margl120
+\margr120
+{\colortbl;\red0\green0\blue0;}
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f0\b\i0\ulnone\fs48\fc1\cf1 NEXTSTEP 3.3 Users and Logins Q&A
+\b0\fs24\fc0\cf0 \
+\
+
+\pard\tx520\tx1060\tx1600\tx2120\tx2660\tx3200\tx3720\tx4260\tx4800\tx5320\b\fs32\fc0\cf0 Creation Date: 
+\b0 August 13, 1998
+\b \
+Keywords:
+\b0  NeXTSTEP
+\b \
+
+\f2\b0\fs24\fc1\cf1 \
+
+\f0\b\fs32 Disclaimer\
+\
+
+\f2\b0\fs24 This document pertains to the NeXTSTEP operating system, which is no longer a supported product of Apple Computer.  This information is provided only as a convenience to our customers who have not yet upgraded their systems, and may not apply to OPENSTEP, WebObjects, or any other product of Apple Enterprise Software.  Some questions in this Q&A document may not apply to version 3.3 or to any given specific version of NeXTSTEP.
+\f0\b\fs32 \
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\f2\b0\fs28\fc1\cf1 Q: UserManager is unable to add a new user.  For example, when I try to select a domain for a new user, a panel displays the following message:\
+\
+
+\f3\fs24\fi-960\li960 	NetInfo Failure, Unable to open connection to NetInfo Domain <chosen domain>, error was 'No such directory'.  The user can't be added to the chosen domain as the correct domain can't be selected.\
+
+\f2\fs28\fi0\li0 \
+What's going on?\
+\
+A:  UserManager implicitly relies on the existence of NetInfo directories users, groups, and aliases.  They are created by HostManager for the network domain or are there by default for the local domain.  However, if a custom multi-level NetInfo hierarchy is built, the directories might not necessarily be there.  If any of those three directories is missing, UserManager is not able to open the domain and thus can't add the new user.\
+\
+A workaround is the following:\
+\
+
+\fi-980\li980 1)	Launch NetInfoManager.\
+2)	Open the appropriate domain.\
+3)	Create a new subdirectory of the root domain, using the New Subdirectory command from the Domain submenu.\
+4)	Double-click the newly created Subdirectory labeled NewValue.\
+5)	Change the value of the name property to that of the missing directory.  Repeat for any other missing directories.\
+\
+
+\fi0\li0 You should now be able to open the appropriate domain to create a new user in UserManager.\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc1\cf1 \
+
+\fc0\cf0 Q:  How do you execute ~/.login, ~/.cshrc, ~/.profile, or ~/.logout without invoking Terminal, Shell, or a similar sort of shell-based terminal emulator?  Is there a hook in Workspace Manager that allows you do something when you log in or log out?\
+\
+A:  All the shell run control files (the ones mentioned above) are shell-specific.  .cshrc, .login, and .logout pertain to the C-Shell; .profile pertains to the Bourne Shell.  Only those programs examine and execute these files.  (By implication, then, if your login shell is neither csh nor sh, these files are not executed even when you launch Terminal or Shell.)\
+\
+There is a "LoginHook" and a "LogoutHook" in 
+\b loginwindow
+\b0 .  The LoginHook is run just before loginwindow launches the specified workspace (by default, the NeXT Workspace Manager; but this can be overridden in the user's defaults database), and after account verification.  Note that the LoginHook is NOT run under the Workspace Manager, but rather is run BEFORE the Workspace Manager.  LogoutHook is run after the Workspace Manager terminates.\
+\
+To set up these hooks, type:\
+
+\f3 \
+
+\fs24 	myhost% 
+\b su
+\b0 \
+	myhost# 
+\b dwrite loginwindow LoginHook someProgram
+\b0 \
+	myhost# 
+\b dwrite loginwindow LogoutHook someOtherProgram
+\b0 \
+	myhost# 
+\b exit
+\b0 \
+
+\fs28 \
+
+\f2 where the final argument to 
+\b dwrite
+\b0  is the name of whatever program you want to run.
+\b   
+\b0 This creates the default on a machine-by-machine basis, since the information is stored in the directory /.NeXT.  (Of course, if you have netboot clients, it need only be done on the servers of all the clients, since the root directory is shared.
+\b )\
+ 
+\b0 \
+Note that neither hook is run if an automatic "me" login is performed.  The real philosophy behind the hooks is to provide additional accounting or authentication, rather than setting up the Workspace Manager's environment.  If something is required within the Workspace Manager's environment, the only real option is to have a program of your specification autolaunched from your dock.\
+\
+
+\pard\tx960\tx1920\tx2880\tx3840\tx4800\tx5760\tx6720\tx7680\tx8640\tx9600\fc0\cf0 Q: I tried to change my password using the passwd command or Preferences.app, but it didn't seem to take effect.   Why not?\
+\
+Q:  How do I remove my password? \
+\
+A:  Use the Preferences application to change your password.  If you are on a network composed of NEXTSTEP and non-NEXTSTEP OS's you might also need to update the NIS (formerly known as Yellow Pages) database by running the yppasswd command.  If your account information is stored in NIS, run the following command in a Terminal or Shell:\
+\
+	
+\f3\fs24 machine>yppasswd your-login-name
+\f2\fs28 \
+\
+as in: 
+\f3\fs24 yppasswd jsmith
+\f2\fs28 .\
+\
+If your account is stored in NetInfoÐwhich is the default in NEXTSTEPÐdo the following to remove your password:\
+\
+
+\fi-980\li980 ·	Launch NetInfoManager.\
+·	Open the domain where your account is stored; this is probably the root (/) domain if you\
+	are on a Network. If you are on a standalone machine, the right (local) domain will come\
+	up by default.\
+·	Click the users directory , then double-click your account name. This opens the\
+	property editor.\
+·	Click the passwd property, then remove its value and save the changes\
+
+\fi0\li0 	\
+Removing a password that is stored in NIS is slightly more difficult.  On the yp-master server do the following as root:\
+\
+
+\fi-980\li980 ·	Edit the /etc/passwd file and remove the passwd field from your account.\
+·	Then run the following commands in a Shell or Terminal:\
+
+\f3\fs24\fi0\li0 	\
+	ypmaster#cd /etc/yp\
+	ypmaster#make passwd\
+
+\f2\fs28 	\
+Q:  How can I change my password from a non-NEXTSTEP system, given that the NIS (formerly known as Yellow Pages or "YP") database is mastered by NetInfo?\
+\
+A:   Replace the standard yppasswd command on the non-NEXTSTEP system with a shell script that rsh's the NetInfo master server and passes the arguments on as arguments to passwd.  Something like:\
+\
+
+\f3\fs24 	#\
+	# replace the yppasswd command on your non-NeXT machine with this shell\
+	# script. This shell script checks if it received a username as an\
+	# argument, if not it will default to the user that executes the command.\
+	# The script turns echo off, logs into the configuration server and runs\
+	# the passwd command that updates the NetInfo database. It then restores\
+	# the echo status to it's initial value.\
+	#\
+\
+	#!/bin/csh\
+	set Server = "ni_server"\
+	set Account = $\{1\}\
+	if ($\{Account\} == "") then\
+		set Account  = `whoami`\
+	endif\
+	(stty > /dev/tty) |& grep '.-echo' >& /dev/null\
+	if ( $\{status\} != 0 ) then\
+		set NoEcho=0\
+	else\
+		set NoEcho=1\
+	endif\
+ \
+	stty -echo\
+	rsh $\{Server\} /bin/passwd $Account\
+	if ( $\{NoEcho\} == 0 ) then\
+		stty echo\
+	endif\
+
+\f2\fs28 \
+Then, every 5 minutes (or 15, or 30...), have cron test for changes in the password file by nidumping and comparing.  If they are different, automatically perform a ypmake for the password file.   Alternately, have the rsh touch a file on the master server that causes cron to dump and push the database.\
+\
+Replace 
+\f3\fs24 ni_server
+\f2\fs28  in the above shell script with the name of your configuration server. The shell script assumes that the hosts are equivalent, see the man page for hosts.equiv(5) for more information. Be sure to make this shell script read-only and set its ownership to root.\
+\
+\
+Q: How do I create a user account with localized defaults?\
+\
+\
+A: 
+\f0\fs24  If you specify a language other than English when you create new user accounts using the UserManager application in OPENSTEP 4.0 for Mach, some OPENSTEP defaults in the new account will not correctly match the 3.3-style defaults given to the account. The Language, Measurement Units, and Paper Size values displayed in Preferences are not the ones that will be used by OPENSTEP apps (which will use English/US defaults for these values).\
+\
+If you are creating many user accounts, you can use program hooks in UserManager to modify user accounts to have the correct OPENSTEP defaults as you create the accounts.
+\b \
+
+\b0 \
+Copy the following text into a file with execute permissions turned on.\
+\
+    DEFAULTSLIST=$5/#DEFAULTS4#\
+    USERNAME=$1\
+    grep -v "^#" $DEFAULTSLIST | sed "s/^/\\/usr\\/bin\\/defaults write /" > /tmp/defaults.$USERNAME\
+    su $USERNAME < /tmp/defaults.$USERNAME\
+    rm -f  /tmp/defaults.$USERNAME\
+    rm -f  $DEFAULTSLIST\
+\
+Then select Defaults in the User menu of the Usermanager application to bring up the User Defaults panel. Select "After creating a user's home" in the Program hooks pop-down menu in the User Defaults panel and set the Program hooks path to point to the file where you saved the above text.\
+\
+
+\fc1\cf1 For more information on using Program Hooks, see the "Program Hooks" section in Chapter 5 ("Managing User Accounts and User Groups") of the online 
+\i NEXTSTEP Network and System Administration
+\i0  manual (in 
+\b /NextLibrary/Bookshelves
+\b0  if you have the Documentation package installed).\
+\
+If you are just working with a few accounts it may be easier to
+\fc0\cf0  synchronize the OPENSTEP and 3.3-style defaults for the individual accounts. To do this, you should select a different value in Preferences for each of the Language, Measurement Units, and Paper Size defaults and then re-select the values that you want.\
+\
+
+}
